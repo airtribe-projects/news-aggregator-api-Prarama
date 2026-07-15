@@ -1,6 +1,6 @@
 const tap = require('tap');
 const supertest = require('supertest');
-const app = require('../app');
+const app = require('../src/app');
 const server = supertest(app);
 
 const mockUser = {
