@@ -1,2 +1,22 @@
-node_modules
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Test runner output
 .tap
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files (Windows)
+Thumbs.db
+Desktop.ini
+
+# Editor (optional — remove if you share VS Code settings with your team)
+.vscode/
