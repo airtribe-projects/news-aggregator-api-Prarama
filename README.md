@@ -1,6 +1,6 @@
 # News Aggregator API
 
-A simple and robust RESTful API that aggregates news from GNews.io and serves personalized feeds based on user preferences.
+A simple and robust restful API that aggregates news from GNews.io and serves personalized feeds based on user preferences.
 
 ## Project Structure
 
