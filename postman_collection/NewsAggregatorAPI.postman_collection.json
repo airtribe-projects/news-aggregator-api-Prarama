@@ -1,0 +1,259 @@
+{
+  "info": {
+    "_postman_id": "news-aggregator-api-collection",
+    "name": "News Aggregator API",
+    "description": "Postman collection for the News Aggregator API. Contains all endpoints for user authentication, preference management, and personalized news feed.\n\n**Setup:**\n1. Import this collection into Postman.\n2. Set the `baseUrl` variable to `http://localhost:3000`.\n3. Run `POST /users/signup` first, then `POST /users/login` — the token is automatically saved.\n4. All protected requests use the saved `token` variable automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "User registration and login endpoints.",
+      "item": [
+        {
+          "name": "Sign Up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Clark Kent\",\n  \"email\": \"clark@superman.com\",\n  \"password\": \"Krypt()n8\",\n  \"preferences\": [\"movies\", \"comics\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "signup"]
+            },
+            "description": "Register a new user account.\n\n**Request Body:**\n- `name` (string, required) — Full name of the user.\n- `email` (string, required) — Email address.\n- `password` (string, required) — Account password.\n- `preferences` (array of strings, optional) — Initial category preferences.\n\n**Response:** `200 OK` on success."
+          },
+          "response": [
+            {
+              "name": "200 OK - User Registered",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"User registered successfully!\",\n  \"user\": {\n    \"id\": \"60d5f4840c7b1c001c8f1234\",\n    \"name\": \"Clark Kent\",\n    \"email\": \"clark@superman.com\"\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Missing Fields",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Please fill out all required fields: name, email, and password.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "    console.log('✅ Token saved to collection variable');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"clark@superman.com\",\n  \"password\": \"Krypt()n8\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "login"]
+            },
+            "description": "Authenticate an existing user.\n\n**Request Body:**\n- `email` (string, required)\n- `password` (string, required)\n\n**Response:** `200 OK` with a JWT token.\n\n> ⚡ The `token` collection variable is automatically set from the response via the **Tests** script."
+          },
+          "response": [
+            {
+              "name": "200 OK - Login Successful",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Login successful!\",\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"60d5f4840c7b1c001c8f1234\",\n    \"name\": \"Clark Kent\",\n    \"email\": \"clark@superman.com\"\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized - Invalid Credentials",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Invalid email or password.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User Preferences",
+      "description": "Protected endpoints to view and update user preferences. Requires a valid Bearer token.",
+      "item": [
+        {
+          "name": "Get Preferences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT token obtained from the Login endpoint."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "preferences"]
+            },
+            "description": "Retrieve the current user's saved preferences.\n\n**Auth:** Bearer token required.\n\n**Response:** `200 OK` with a `preferences` array."
+          },
+          "response": [
+            {
+              "name": "200 OK - Preferences Retrieved",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"preferences\": [\"movies\", \"comics\"]\n}"
+            },
+            {
+              "name": "401 Unauthorized - No Token",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Access token missing\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT token obtained from the Login endpoint."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferences\": [\"movies\", \"comics\", \"games\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "preferences"]
+            },
+            "description": "Replace the current user's saved preferences with a new list.\n\n**Auth:** Bearer token required.\n\n**Request Body:**\n- `preferences` (array of strings) — Updated list of categories.\n\n**Response:** `200 OK` with updated preferences."
+          },
+          "response": [
+            {
+              "name": "200 OK - Preferences Updated",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Preferences updated successfully!\",\n  \"preferences\": [\"movies\", \"comics\", \"games\"]\n}"
+            },
+            {
+              "name": "401 Unauthorized - No Token",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Access token missing\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "News",
+      "description": "Protected endpoints to retrieve personalized news. Requires a valid Bearer token.",
+      "item": [
+        {
+          "name": "Get News Feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT token obtained from the Login endpoint."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/news",
+              "host": ["{{baseUrl}}"],
+              "path": ["news"]
+            },
+            "description": "Fetch a personalized news feed based on the authenticated user's saved preferences.\n\nArticles are retrieved from GNews.io using the categories stored in the user's preferences.\n\n**Auth:** Bearer token required.\n\n**Response:** `200 OK` with a `news` array of articles."
+          },
+          "response": [
+            {
+              "name": "200 OK - News Feed",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"news\": [\n    {\n      \"title\": \"Example News Headline\",\n      \"description\": \"A brief description of the article.\",\n      \"url\": \"https://example.com/article\",\n      \"source\": \"Example Source\",\n      \"publishedAt\": \"2026-07-15T10:00:00Z\",\n      \"image\": \"https://example.com/image.jpg\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "401 Unauthorized - No Token",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Access token missing\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
