@@ -26,7 +26,7 @@ const connectDB = async () => {
             console.error('💡 Tip: If you are on a restricted network or VPN, try switching to a public DNS (like 8.8.8.8) or verify your connection string formatting.');
         }
         
-        process.exit(1); 
+        throw error;
     }
 };
 

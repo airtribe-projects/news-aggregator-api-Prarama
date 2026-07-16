@@ -72,12 +72,16 @@ npm test
 ## API Endpoints
 
 ### Authentication
-- `POST /users/signup` - Register a new user account.
-- `POST /users/login` - Authenticate a user and receive a JWT.
+- `POST /register` - Register a new user account.
+- `POST /login` - Authenticate a user and receive a JWT.
 
 ### User Preferences (Protected)
-- `GET /users/preferences` - Retrieve the user's category preferences.
-- `PUT /users/preferences` - Update the user's category preferences.
+- `GET /preferences` - Retrieve the user's category preferences.
+- `PUT /preferences` - Update the user's category preferences.
 
 ### News (Protected)
 - `GET /news` - Retrieve a personalized news feed based on the user's preferences.
+- `POST /news/read` - Mark a news article as read.
+- `GET /news/read` - Retrieve all articles marked as read by the user.
+- `POST /news/favorites` - Add a news article to the user's favorites.
+- `GET /news/favorites` - Retrieve all articles marked as favorite by the user.
