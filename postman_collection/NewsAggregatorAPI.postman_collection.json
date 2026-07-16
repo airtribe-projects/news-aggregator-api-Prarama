@@ -66,6 +66,49 @@
           ]
         },
         {
+          "name": "Sign Up (Alias)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Clark Kent\",\n  \"email\": \"clark@superman.com\",\n  \"password\": \"Krypt()n8\",\n  \"preferences\": [\"movies\", \"comics\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["signup"]
+            },
+            "description": "Register a new user account using the /signup alias endpoint.\n\n**Request Body:**\n- `name` (string, required) — Full name of the user.\n- `email` (string, required) — Email address.\n- `password` (string, required) — Account password.\n- `preferences` (array of strings, optional) — Initial category preferences.\n\n**Response:** `200 OK` on success."
+          },
+          "response": [
+            {
+              "name": "200 OK - User Registered",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"User registered successfully!\",\n  \"user\": {\n    \"id\": \"60d5f4840c7b1c001c8f1234\",\n    \"name\": \"Clark Kent\",\n    \"email\": \"clark@superman.com\"\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Missing Fields",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Please fill out all required fields: name, email, and password.\"\n}"
+            }
+          ]
+        },
+        {
           "name": "Login",
           "event": [
             {
@@ -216,7 +259,7 @@
     },
     {
       "name": "News",
-      "description": "Protected endpoints to retrieve personalized news. Requires a valid Bearer token.",
+      "description": "Protected endpoints to retrieve personalized news, track read history, and favorite articles. Requires a valid Bearer token.",
       "item": [
         {
           "name": "Get News Feed",
@@ -250,6 +293,158 @@
               "code": 401,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
               "body": "{\n  \"message\": \"Access token missing\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark Article as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT token obtained from the Login endpoint."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Example News Headline\",\n  \"description\": \"A brief description of the article.\",\n  \"url\": \"https://example.com/article\",\n  \"source\": \"Example Source\",\n  \"publishedAt\": \"2026-07-15T10:00:00Z\",\n  \"image\": \"https://example.com/image.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/news/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "read"]
+            },
+            "description": "Mark an article as read for the authenticated user.\n\n**Auth:** Bearer token required.\n\n**Request Body:**\n- `title` (string, optional)\n- `description` (string, optional)\n- `url` (string, required) — The URL of the article to mark as read.\n- `source` (string, optional)\n- `publishedAt` (string, optional)\n- `image` (string, optional)\n\n**Response:** `200 OK` on success."
+          },
+          "response": [
+            {
+              "name": "200 OK - Article Marked as Read",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Article marked as read successfully.\",\n  \"readArticles\": [\n    {\n      \"title\": \"Example News Headline\",\n      \"description\": \"A brief description of the article.\",\n      \"url\": \"https://example.com/article\",\n      \"source\": \"Example Source\",\n      \"publishedAt\": \"2026-07-15T10:00:00Z\",\n      \"image\": \"https://example.com/image.jpg\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "400 Bad Request - Missing URL",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Article URL is required to mark as read.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Read Articles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT token obtained from the Login endpoint."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/news/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "read"]
+            },
+            "description": "Retrieve the list of articles marked as read by the authenticated user.\n\n**Auth:** Bearer token required.\n\n**Response:** `200 OK` with a list of read articles."
+          },
+          "response": [
+            {
+              "name": "200 OK - Read Articles Retrieved",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"read\": [\n    {\n      \"title\": \"Example News Headline\",\n      \"description\": \"A brief description of the article.\",\n      \"url\": \"https://example.com/article\",\n      \"source\": \"Example Source\",\n      \"publishedAt\": \"2026-07-15T10:00:00Z\",\n      \"image\": \"https://example.com/image.jpg\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark Article as Favorite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT token obtained from the Login endpoint."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Example News Headline\",\n  \"description\": \"A brief description of the article.\",\n  \"url\": \"https://example.com/article\",\n  \"source\": \"Example Source\",\n  \"publishedAt\": \"2026-07-15T10:00:00Z\",\n  \"image\": \"https://example.com/image.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/news/favorites",
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "favorites"]
+            },
+            "description": "Add an article to the favorites list for the authenticated user.\n\n**Auth:** Bearer token required.\n\n**Request Body:**\n- `title` (string, optional)\n- `description` (string, optional)\n- `url` (string, required) — The URL of the article to add to favorites.\n- `source` (string, optional)\n- `publishedAt` (string, optional)\n- `image` (string, optional)\n\n**Response:** `200 OK` on success."
+          },
+          "response": [
+            {
+              "name": "200 OK - Article Added to Favorites",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Article added to favorites successfully.\",\n  \"favoriteArticles\": [\n    {\n      \"title\": \"Example News Headline\",\n      \"description\": \"A brief description of the article.\",\n      \"url\": \"https://example.com/article\",\n      \"source\": \"Example Source\",\n      \"publishedAt\": \"2026-07-15T10:00:00Z\",\n      \"image\": \"https://example.com/image.jpg\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "400 Bad Request - Missing URL",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Article URL is required to add to favorites.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Favorite Articles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT token obtained from the Login endpoint."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/news/favorites",
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "favorites"]
+            },
+            "description": "Retrieve the list of articles marked as favorites by the authenticated user.\n\n**Auth:** Bearer token required.\n\n**Response:** `200 OK` with a list of favorite articles."
+          },
+          "response": [
+            {
+              "name": "200 OK - Favorite Articles Retrieved",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"favorites\": [\n    {\n      \"title\": \"Example News Headline\",\n      \"description\": \"A brief description of the article.\",\n      \"url\": \"https://example.com/article\",\n      \"source\": \"Example Source\",\n      \"publishedAt\": \"2026-07-15T10:00:00Z\",\n      \"image\": \"https://example.com/image.jpg\"\n    }\n  ]\n}"
             }
           ]
         }

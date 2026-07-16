@@ -11,7 +11,7 @@ const getNewsFeed = async (req, res, next) => {
 
         // req.user.id is derived dynamically from your verified JWT middleware token layer
         const user = await User.findById(req.user.id);
-        
+
         if (!user) {
             return res.status(404).json({ message: "User account profile not found." });
         }
@@ -37,7 +37,7 @@ const getNewsFeed = async (req, res, next) => {
         return res.status(200).json({
             news: articles
         });
-        
+
     } catch (error) {
         next(error);
     }
