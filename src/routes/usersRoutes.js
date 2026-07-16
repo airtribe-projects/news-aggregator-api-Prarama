@@ -4,7 +4,8 @@ const usersController = require("../controllers/usersController");
 const authenticateToken = require("../middleware/auth");
 
 // Auth routes
-router.post("/signup", usersController.registerUser);
+router.post("/register", usersController.registerUser);
+router.post("/signup", usersController.registerUser); // Alias support
 router.post("/login", usersController.loginUser);
 
 // Preferences routes
