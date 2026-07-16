@@ -4,7 +4,7 @@
   "description": "Assignment 2 for backend engineering launchpad",
   "main": "src/server.js",
   "scripts": {
-    "pretest": "node -e \"if (process.version.slice(1).split('.')[0] < 18) { console.error('Unsupported Node.js version, please use version 18'); process.exit(1); }\"",
+    "pretest": "node -e \"if (parseInt(process.version.slice(1).split('.')[0], 10) < 18) { console.warn('⚠️ Warning: Project is recommended to run on Node.js v18+. Current: ' + process.version); }\"",
     "test": "tap test/*.js --disable-coverage",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"

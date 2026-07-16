@@ -18,16 +18,40 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters long"],
     },
-    // Flat list of preferences (string array)
+    // Structured category and language preferences
     preferences: {
-      type: [String],
-      default: [],
+      categories: {
+        type: [String],
+        default: [],
+      },
+      languages: {
+        type: [String],
+        default: [],
+      },
     },
+    // Optional tracked news features
+    readArticles: [{
+      title: String,
+      description: String,
+      url: { type: String },
+      source: String,
+      publishedAt: String,
+      image: String
+    }],
+    favoriteArticles: [{
+      title: String,
+      description: String,
+      url: { type: String },
+      source: String,
+      publishedAt: String,
+      image: String
+    }]
   },
   {
     timestamps: true, // Automatically tracks createdAt and updatedAt
   },
 );
 
-module.exports = mongoose.model("user", UserSchema);
+module.exports = mongoose.model("User", UserSchema);

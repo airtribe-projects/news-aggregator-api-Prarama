@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "news-aggregator-api-collection",
     "name": "News Aggregator API",
-    "description": "Postman collection for the News Aggregator API. Contains all endpoints for user authentication, preference management, and personalized news feed.\n\n**Setup:**\n1. Import this collection into Postman.\n2. Set the `baseUrl` variable to `http://localhost:3000`.\n3. Run `POST /users/signup` first, then `POST /users/login` — the token is automatically saved.\n4. All protected requests use the saved `token` variable automatically.",
+    "description": "Postman collection for the News Aggregator API. Contains all endpoints for user authentication, preference management, and personalized news feed.\n\n**Setup:**\n1. Import this collection into Postman.\n2. Set the `baseUrl` variable to `http://localhost:3000`.\n3. Run `POST /register` first, then `POST /login` — the token is automatically saved.\n4. All protected requests use the saved `token` variable automatically.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -42,9 +42,9 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/users/signup",
+              "raw": "{{baseUrl}}/register",
               "host": ["{{baseUrl}}"],
-              "path": ["users", "signup"]
+              "path": ["register"]
             },
             "description": "Register a new user account.\n\n**Request Body:**\n- `name` (string, required) — Full name of the user.\n- `email` (string, required) — Email address.\n- `password` (string, required) — Account password.\n- `preferences` (array of strings, optional) — Initial category preferences.\n\n**Response:** `200 OK` on success."
           },
@@ -100,9 +100,9 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/users/login",
+              "raw": "{{baseUrl}}/login",
               "host": ["{{baseUrl}}"],
-              "path": ["users", "login"]
+              "path": ["login"]
             },
             "description": "Authenticate an existing user.\n\n**Request Body:**\n- `email` (string, required)\n- `password` (string, required)\n\n**Response:** `200 OK` with a JWT token.\n\n> ⚡ The `token` collection variable is automatically set from the response via the **Tests** script."
           },
@@ -141,9 +141,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/users/preferences",
+              "raw": "{{baseUrl}}/preferences",
               "host": ["{{baseUrl}}"],
-              "path": ["users", "preferences"]
+              "path": ["preferences"]
             },
             "description": "Retrieve the current user's saved preferences.\n\n**Auth:** Bearer token required.\n\n**Response:** `200 OK` with a `preferences` array."
           },
@@ -189,9 +189,9 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/users/preferences",
+              "raw": "{{baseUrl}}/preferences",
               "host": ["{{baseUrl}}"],
-              "path": ["users", "preferences"]
+              "path": ["preferences"]
             },
             "description": "Replace the current user's saved preferences with a new list.\n\n**Auth:** Bearer token required.\n\n**Request Body:**\n- `preferences` (array of strings) — Updated list of categories.\n\n**Response:** `200 OK` with updated preferences."
           },
